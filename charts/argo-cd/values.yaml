@@ -1,0 +1,16 @@
+argo-cd:
+  dex:
+    enabled: false
+  server:
+    extraArgs:
+    - --insecure
+    config:
+      repositories: |
+        - type: helm
+          name: argo-cd
+          url: https://argoproj.github.io/argo-helm
+      configManagementPlugins: |
+        - name: helm-template
+          generate:
+            command: ["sh", "-c"]
+            args: ["helm template --version ${HELM_CHART_VERSION} --repo ${HELM_REPO_URL} --namespace ${NAMESPACE}  $HELM_CHART_NAME --name-template=${HELM_RELEASE_NAME} -f $(pwd)/${HELM_VALUES_FILE} "]
