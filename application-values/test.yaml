@@ -1,0 +1,17 @@
+app_helm_env:
+  deploymentName: telegraf-test
+  chartName: telegraf
+  chartPath: https://helm.influxdata.com/
+  chartVersion: 1.8.18
+  namespace: infra
+
+## Default values.yaml for Telegraf
+## This is a YAML-formatted file.
+## ref: https://hub.docker.com/r/library/telegraf/tags/
+
+replicaCount: 1
+
+image:
+  repo: "telegraf"
+  tag: "1.22-alpine"
+  pullPolicy: IfNotPresent
