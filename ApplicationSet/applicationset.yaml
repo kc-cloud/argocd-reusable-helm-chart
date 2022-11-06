@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applicationset-test
+  namespace: infra
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/app_helm_envLtd/argocd-reusable-helm-chart.git
+      revision: HEAD
+      files:
+      - path: "helm-values-files/**/*.yaml"
+  template:
+    metadata:
+      name: '{{ app_helm_env.deploymentName }}'
+    spec:
+      destination:
+        namespace: "{{ app_helm_env.namespace }}"
+        server: https://kubernetes.default.svc
+      project: "{{ app_helm_env.namespace }}"
+      source:
+        path: "./"
+        repoURL: https://github.com/app_helm_envLtd/argocd-reusable-helm-chart.git
+        targetRevision: HEAD
+        plugin:
+          name: helm-template
+          env:
+            - name: HELM_RELEASE_NAME
+              value: "{{ app_helm_env.deploymentName }}"
+            - name: HELM_CHART_VERSION
+              value: "{{ app_helm_env.chartVersion }}"
+            - name: NAMESPACE
+              value: "{{app_helm_env.namespace}}"
+            - name: HELM_REPO_URL
+              value: "{{ app_helm_env.chartPath }}"
+            - name: HELM_CHART_NAME
+              value: "{{ app_helm_env.chartName }}"
+            - name: HELM_VALUES_FILE
+              value: "{{ filepath }}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
